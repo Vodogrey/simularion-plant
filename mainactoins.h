@@ -5,12 +5,14 @@
 
 #include "generatedetals.h"
 #include "countdetals.h"
+#include "connect.h"
 
 class MainActoins : public QObject
 {
     Q_OBJECT
 public:
     explicit MainActoins(QObject *parent = 0);
+    bool stage(char stage);
 
 
 signals:

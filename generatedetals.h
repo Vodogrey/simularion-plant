@@ -6,10 +6,18 @@
 
 #include <qdebug.h>
 
-struct Request {
+class Request {
+public:
     int systemTime;
     int procTime;
     char type;
+/*
+    bool operator ==(const Request &r) {
+    if (this->type != r.type) {
+        return false;
+    }
+    return true;
+    }*/
 };
 
 class GenerateDetals : public QObject
