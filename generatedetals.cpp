@@ -8,7 +8,7 @@ setCalcTime(0);
 
 bool GenerateDetals::isTime()
 {
-     qDebug() << "!TIME" << m_waitTime;
+   //  qDebug() << "!TIME" << m_waitTime;
     if(--m_waitTime <= 0) {
         CalcTime();
         return true;
@@ -21,18 +21,25 @@ void GenerateDetals::setCalcTime(int time)
   m_waitTime = time;
 }
 
-//ниже нет бред коняшек
+//ниже не бред коняшек
+
+/*
+ *
+ *
+ *  тайминг расчитывается тайм+-треть
+ *
+ */
 
 void GenerateDetals::CalcTime()
 {
         if(m_waitTime <= 0) {
             int dispersion = qrand() % ((getCentralTime()/3) * 2) + 1 - getCentralTime()/3;
             m_waitTime = getCentralTime() + dispersion;
-            qDebug() << "generator time" << m_waitTime << "central time" << getCentralTime() << "dispersion" << dispersion;
+          //qDebug() << "generator time" << m_waitTime << "central time" << getCentralTime() << "dispersion" << dispersion;
         }
 }
 
-//нужен тип детали
+//нужен тип детали typeDetal
 
 Request* GenerateDetals::GetRequest(char typeDetal)
 {

@@ -18,8 +18,8 @@ void MainWindow::GUI()
     m_layout = new QGridLayout();
     m_widget = new QWidget();
     m_pb_start = new QPushButton("Start");
-    m_pb_pause = new QPushButton();
-    m_pb_stop = new QPushButton();
+    m_pb_pause = new QPushButton("Pause");
+    m_pb_stop = new QPushButton("Stop");
     m_le_input = new QLineEdit();
     m_lb_input = new QLabel("Введите число частей");
     m_lb_countDetals = new QLabel();

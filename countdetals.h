@@ -10,9 +10,10 @@ class CountDetals : public QObject
     Q_OBJECT
 public:
     explicit CountDetals(QObject *parent = 0);
-    void add(Request* req);
-    bool isAvaliable(char detal, int count);
-    void setProcTime();
+    void add(Request* req); //добавление в очередь
+    int getSize();
+    Request* at(int pos);
+    Request* getRequest(QChar detal);
 
 signals:
 

@@ -9,14 +9,14 @@ TEMPLATE = app
 SOURCES += main.cpp \
     mainwindow.cpp \
     generatedetals.cpp \
-    connect.cpp \
     mainactoins.cpp \
-    countdetals.cpp
+    countdetals.cpp \
+    connectdetals.cpp
 
 HEADERS += \
     mainwindow.h \
     generatedetals.h \
-    connect.h \
     mainactoins.h \
-    countdetals.h
+    countdetals.h \
+    connectdetals.h
 
