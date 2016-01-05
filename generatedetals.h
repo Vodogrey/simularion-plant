@@ -35,9 +35,12 @@ public:
     void setCentralTime(int time);
     void setCalcTime(int time);
     int getProcessTime();
+    void setCountDetals(int count);
+    bool isCanConnect();
 private:
     int m_waitTime;
     int m_centralTime;
+    int m_countDetals;
 
 };
 

@@ -27,7 +27,7 @@ void MainWindow::GUI()
     outCountDetals = new QLabel();
     outPerfomance = new QLabel();
 
-    m_actions = new MainActoins();
+    m_actions = new MainActions();
 
     m_layout->addWidget(m_lb_countDetals, 1, 1, 5, 1);
     m_layout->addWidget(m_lb_input, 1, 5, 1, 4);
@@ -44,7 +44,7 @@ void MainWindow::GUI()
 
 void MainWindow::Buttons()
 {
-    connect(this, SIGNAL(processOn()), m_actions, SLOT(Process()));
+    connect(this, SIGNAL(processOn(int)), m_actions, SLOT(Process(int)));
     connect(m_pb_pause, SIGNAL(clicked()), this, SLOT(slot_pb_pause()));
     connect(m_pb_stop, SIGNAL(clicked()), this, SLOT(slot_pb_stop()));
     connect(m_pb_start, SIGNAL(clicked()), this, SLOT(slot_pb_start()));
@@ -57,8 +57,11 @@ void MainWindow::slot_pb_start()
 {
     int count = m_le_input->text().toInt();
     qDebug() << count;
-    m_pb_start->setDisabled(true);
-    emit processOn();
+    if(count > 0) {
+        m_pb_start->setDisabled(true);
+        pauseEnabled = false;
+        emit processOn(count);
+    }
 }
 
 void MainWindow::slot_pb_pause()
@@ -66,12 +69,14 @@ void MainWindow::slot_pb_pause()
     QEventLoop loop;
     if(pauseEnabled) {
         pauseEnabled = false;
-        loop.exit(0);
     }
     else {
-        QTimer::singleShot(99999,&loop,SLOT(quit()));
-        loop.exec();
+
         pauseEnabled = true;
+        while(pauseEnabled) {
+            QTimer::singleShot(100,&loop,SLOT(quit()));
+            loop.exec();
+        }
     }
     qDebug() << "pause is " << pauseEnabled;
 }
@@ -86,28 +91,28 @@ void MainWindow::slot_outResult()
 {
     outCountDetals->clear();
     outCountDetals->setText(QString("Деталей А: %1").arg(getCountDetals('A')) +
-                 QString("\nДеталей B: %1").arg(getCountDetals('B')) +
-                 QString("\nДеталей C: %1").arg(getCountDetals('C')) +
-                 QString("\nДеталей D: %1").arg(getCountDetals('D')) +
-                 QString("\nДеталей E: %1").arg(getCountDetals('E')) +
-                 QString("\nДеталей F: %1").arg(getCountDetals('F')) +
-                 QString("\nДеталей G: %1").arg(getCountDetals('G')) +
-                 QString("\nДеталей H: %1").arg(getCountDetals('H')));
+                            QString("\nДеталей B: %1").arg(getCountDetals('B')) +
+                            QString("\nДеталей C: %1").arg(getCountDetals('C')) +
+                            QString("\nДеталей D: %1 и %2 непроверенных").arg(getCountDetals('D')).arg(getCountDetals('d')) +
+                            QString("\nДеталей E: %1 и %2 непроверенных").arg(getCountDetals('E')).arg(getCountDetals('e')) +
+                            QString("\nДеталей F: %1").arg(getCountDetals('F')) +
+                            QString("\nДеталей G: %1").arg(getCountDetals('G')) +
+                            QString("\nДеталей H: %1").arg(getCountDetals('H'))
+                            );
 
 
     outPerfomance->clear();
 
-    QString gen1;
-    QString gen2;
-    QString gen3;
 
-
-//    outPerfomance->setText(QString("Деталь А поступит через: %1 минут").arg(getProcessTime('G',1)) +
-//                           QString("Деталь В поступит через: %1 минут").arg(getCountDetals('G',2)) +
-//                           QString("Деталь С поступит через: %1 минут").arg(getCountDetals('G',3)) +
-//                           QString("Деталь D поступит через: %1 минут").arg(getCountDetals('G',3)) +
-
-
-  //              )
+    outPerfomance->setText(QString("Деталь А поступит через: %1 ").arg(getProcessTime('G',0)) +
+                           QString("\nДеталь В поступит через: %1 минут").arg(getProcessTime('G',1)) +
+                           QString("\nДеталь С поступит через: %1 минут").arg(getProcessTime('G',2)) +
+                           QString("\nДеталь D %1").arg(getProcessTime('C',0)) +
+                           QString("\nДеталь E %1").arg(getProcessTime('C',1)) +
+                           QString("\nДеталь D и Е %1").arg(getProcessTime('C',2)) +
+                           QString("\nДеталь F %1").arg(getProcessTime('C',3)) +
+                           QString("\nДеталь G %1").arg(getProcessTime('C',4)) +
+                           QString("\nДеталь H %1").arg(getProcessTime('C',5))
+                           );
 
 }

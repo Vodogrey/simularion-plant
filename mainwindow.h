@@ -34,9 +34,9 @@ void slot_pb_start();
 void slot_outResult();
 
 signals:
-void processOn();
+void processOn(int);
 int getCountDetals(QChar);
-int getProcessTime(QChar, int);
+QString getProcessTime(QChar, int);
 
 
 private:
@@ -53,7 +53,7 @@ private:
     QLabel* outCountDetals;
     QLabel* outPerfomance;
 
-    MainActoins* m_actions;
+    MainActions* m_actions;
 
     bool pauseEnabled;
 

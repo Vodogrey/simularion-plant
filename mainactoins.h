@@ -11,12 +11,13 @@
 #include "countdetals.h"
 #include "connectdetals.h"
 
-class MainActoins : public QObject
+class MainActions : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit MainActoins(QObject *parent = 0);
+    explicit MainActions(QObject *parent = 0);
+    ~MainActions();
     bool isAvaliable(QChar detal, int count = 1);
 
     void stage(int stageNum);
@@ -26,9 +27,9 @@ signals:
     void updateStats();
 
 public slots:
-    void Process();
+    void Process(int countDetals);
     int slot_getCountDetals(QChar detal);
-    int slot_getProcessTime(QChar type, int number);
+    QString slot_getProcessTime(QChar type, int number);
 
 private:
     bool canConnect;
@@ -47,6 +48,7 @@ private:
 
 
     QVector<GenerateDetals*> m_generators;
+    QVector<ConnectDetals*> m_connections;
 
 };
 

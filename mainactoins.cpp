@@ -2,7 +2,7 @@
 
 #include <qdebug.h>
 
-MainActoins::MainActoins(QObject *parent) : QObject(parent)
+MainActions::MainActions(QObject *parent) : QObject(parent)
 {
     generator1 = new GenerateDetals(15);
     generator2 = new GenerateDetals(6);
@@ -20,47 +20,43 @@ MainActoins::MainActoins(QObject *parent) : QObject(parent)
     stage4 = new ConnectDetals(10, 2, *queue);
     stage5 = new ConnectDetals(15, 4, *queue);
     stage6 = new ConnectDetals(20, 5, *queue);
+
+    m_connections << stage1;
+    m_connections << stage2;
+    m_connections << stage3;
+    m_connections << stage4;
+    m_connections << stage5;
+    m_connections << stage6;
 }
 
-//MainActoins::~MainActons(QObject *parent)
-//{
-//    delete generator;
-//    delete generator2;
-//    delete generator3;
-//}
+MainActions::~MainActions()
+{
+    delete generator1;
+    delete generator2;
+    delete generator3;
+}
 
-void MainActoins::Process()
+void MainActions::Process(int countDetals)
 {
     GenerateDetals* tempGen;
     QChar tempDetalType = 'A';
 
+    for(int countGen = 0; countGen < m_generators.size(); countGen++) {
+        tempGen = m_generators.at(countGen);
+        tempGen->setCountDetals(countDetals);
+    }
+
     canConnect = true;
     while(canConnect)
     {
-            for(int countGen = 0; countGen < m_generators.size(); countGen++) {
-                tempGen = m_generators.at(countGen);
-                tempDetalType = 'A' + countGen;
+        for(int countGen = 0; countGen < m_generators.size(); countGen++) {
+            tempGen = m_generators.at(countGen);
+            tempDetalType = 'A' + countGen;
+            if(tempGen->isCanConnect())
                 if(tempGen->isTime()) {
-                    queue->add(generator1->GetRequest(tempDetalType));
-                qDebug() << "mother of god type" << tempDetalType;
+                    queue->add(tempGen->GetRequest(tempDetalType));
                 }
-            }
-
-
-//        if (generator1->isTime())
-//            queue->add(generator1->GetRequest('A'));
-//        if (generator2->isTime())
-//            queue->add(generator2->GetRequest('B'));
-//        //    qDebug() << "front" << queue->isAvaliable();
-//        if (generator3->isTime())
-//            queue->add(generator3->GetRequest('C'));
-        //  qDebug() << "last A" << isAvaliable('A',1) << "B" << isAvaliable('B', 2); // проверка, есть ли деталь
-
-        //
-        // тут начинается веселье. надо проверять на доступность соединений, плюсовать время работы, сколько заявка в деле
-        // расчет рабочих. еще не ясно, как это все реализовать
-
-        // queue->
+        }
 
         for(int i = 1; i < 7;i++) {
             stage(i);
@@ -76,7 +72,7 @@ void MainActoins::Process()
 
 
 
-bool MainActoins::isAvaliable(QChar detal, int count)
+bool MainActions::isAvaliable(QChar detal, int count)
 {
     Request rec;
     rec.type = detal;
@@ -95,13 +91,14 @@ bool MainActoins::isAvaliable(QChar detal, int count)
 }
 
 
-void MainActoins::stage(int stageNum)
+void MainActions::stage(int stageNum)
 {
     switch (stageNum) {
     case 1:
         if(stage1->isEnded()) {
-            queue->add(stage1->GetRequest('D'));
+            queue->add(stage1->GetRequest('d'));
             stage1->setEnd(false);
+            stage1->setFree(true);
         }
         if(stage1->isFree()) {
             if(isAvaliable('A',1) && isAvaliable('B', 2)) {
@@ -112,8 +109,9 @@ void MainActoins::stage(int stageNum)
         break;
     case 2:
         if(stage2->isEnded()) {
-            queue->add(stage2->GetRequest('E'));
+            queue->add(stage2->GetRequest('e'));
             stage2->setEnd(false);
+            stage2->setFree(true);
         }
         if(stage2->isFree()) {
             if(isAvaliable('A') && isAvaliable('B') && isAvaliable('C')) {
@@ -127,11 +125,12 @@ void MainActoins::stage(int stageNum)
             queue->add(stage3->GetRequest('D'));
             queue->add(stage3->GetRequest('E'));
             stage3->setEnd(false);
+            stage3->setFree(true);
         }
         if(stage3->isFree()) {
-            if(isAvaliable('D') && isAvaliable('E')) {
+            if(isAvaliable('d') && isAvaliable('e')) {
                 stage3->setFree(false);
-                stage3->connecting("DE");
+                stage3->connecting("de");
             }
         }
         break;
@@ -139,9 +138,10 @@ void MainActoins::stage(int stageNum)
         if(stage4->isEnded()) {
             queue->add(stage4->GetRequest('F'));
             stage4->setEnd(false);
+            stage4->setFree(true);
         }
         if(stage4->isFree()) {
-            if(isAvaliable('D') && isAvaliable('B') && stage3->isFree()) {
+            if(isAvaliable('D') && isAvaliable('B')) {
                 stage4->setFree(false);
                 stage4->connecting("DB");
             }
@@ -149,8 +149,9 @@ void MainActoins::stage(int stageNum)
         break;
     case 5:
         if(stage5->isEnded()) {
-           queue->add(stage5->GetRequest('G'));
-           stage5->setEnd(false);
+            queue->add(stage5->GetRequest('G'));
+            stage5->setEnd(false);
+            stage5->setFree(true);
         }
         if(stage5->isFree()) {
             if(isAvaliable('F') && isAvaliable('E')) {
@@ -165,15 +166,13 @@ void MainActoins::stage(int stageNum)
             queue->add(stage6->GetRequest('H'));
             qDebug() << "6 is ended";
             stage6->setEnd(false);
+            stage6->setFree(true);
         }
         if(stage6->isFree()) {
             if(isAvaliable('G') && isAvaliable('B') && isAvaliable('C',2)) {
                 stage6->setFree(false);
                 stage6->connecting("GBCC");
                 qDebug() << "STOP!!!";
-                QEventLoop loop;
-                QTimer::singleShot(100000,&loop,SLOT(quit()));
-                loop.exec();
             }
         }
         break;
@@ -182,7 +181,7 @@ void MainActoins::stage(int stageNum)
     }
 }
 
-int MainActoins::slot_getCountDetals(QChar detal)
+int MainActions::slot_getCountDetals(QChar detal)
 {
     Request rec;
     rec.type = detal;
@@ -196,41 +195,36 @@ int MainActoins::slot_getCountDetals(QChar detal)
     return num;
 }
 
-int MainActoins::slot_getProcessTime(QChar type, int number)
+QString MainActions::slot_getProcessTime(QChar type, int number)
 {
+    QString time;
     if(type == 'G')
-        switch (number) {
-        case 1:
-            return generator1->getProcessTime();
-        case 2:
-            return generator2->getProcessTime();
-        case 3:
-            return generator3->getProcessTime();
-        default:
-            break;
+        if(m_generators[number]->getProcessTime() == 0) {
+            time = "Нет поступлений";
+            return time;
         }
-    if(type == 'Q')
-        switch (number) {
-        case 1:
-            return stage1->getConnectTime();
-        case 2:
-            return stage2->getConnectTime();
-        case 3:
-            return stage3->getConnectTime();
-        case 4:
-            return stage4->getConnectTime();
-        case 5:
-            return stage5->getConnectTime();
-        case 6:
-            return stage6->getConnectTime();
-        default:
-            break;
+        else
+        {
+            time = QString("%1 минут").arg(m_generators[number]->getProcessTime());
+            return time;
         }
+
+    if(type == 'C')
+        if(m_connections[number]->getConnectTime() == 0) {
+            time = "Не изготавляется";
+            return time;
+        }
+        else {
+            time = QString("будет готова через: %1 минут").arg(m_connections[number]->getConnectTime());
+            return time;
+        }
+
+    return "-1";
 }
 
 // ++++ переписать, чтобы деталь добавлялась после обработки ++++
-// выводить, что "готовится" на каждом из этапов, сколько осталось
-// выводить, сколько до генерации, сколько осталось деталей
-// сделать ограничение на детали
-// остановить работу, если соединения больше невозможны
+// ++++ выводить, что "готовится" на каждом из этапов, сколько осталось ++++
+// ++++ выводить, сколько до генерации, сколько осталось деталей ++++
+// ++++ сделать ограничение на детали ++++
+// +-остановить работу, если соединения больше невозможны
 // плюсовать время на детали

@@ -11,6 +11,7 @@ bool GenerateDetals::isTime()
    //  qDebug() << "!TIME" << m_waitTime;
     if(--m_waitTime <= 0) {
         CalcTime();
+        m_countDetals--;
         return true;
     }
     return false;
@@ -65,4 +66,16 @@ int GenerateDetals::getCentralTime()
 void GenerateDetals::setCentralTime(int time)
 {
     m_centralTime = time;
+}
+
+void GenerateDetals::setCountDetals(int count)
+{
+    m_countDetals = count;
+}
+
+bool GenerateDetals::isCanConnect()
+{
+    if(m_countDetals > 0 )
+        return true;
+    return false;
 }
