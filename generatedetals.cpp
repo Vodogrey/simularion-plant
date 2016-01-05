@@ -21,6 +21,11 @@ void GenerateDetals::setCalcTime(int time)
   m_waitTime = time;
 }
 
+int GenerateDetals::getProcessTime()
+{
+    return m_waitTime;
+}
+
 //ниже не бред коняшек
 
 /*
@@ -41,7 +46,7 @@ void GenerateDetals::CalcTime()
 
 //нужен тип детали typeDetal
 
-Request* GenerateDetals::GetRequest(char typeDetal)
+Request* GenerateDetals::GetRequest(QChar typeDetal)
 {
     Request* request = new Request;
     request->procTime=0;

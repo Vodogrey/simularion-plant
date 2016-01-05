@@ -11,7 +11,7 @@ class Request {
 public:
     int systemTime;
     int procTime;
-    char type;
+    QChar type;
 /*
     bool operator ==(const Request &r) {
     if (this->type != r.type) {
@@ -28,12 +28,13 @@ class GenerateDetals : public QObject
 
 public:
     GenerateDetals(int time);
-    Request* GetRequest(char typeDetal);
+    Request* GetRequest(QChar typeDetal);
     bool isTime();
     void CalcTime();
     int getCentralTime();
     void setCentralTime(int time);
     void setCalcTime(int time);
+    int getProcessTime();
 private:
     int m_waitTime;
     int m_centralTime;

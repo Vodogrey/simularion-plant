@@ -9,6 +9,7 @@
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qdebug.h>
+#include <qstringlist.h>
 
 
 #include "mainactoins.h"
@@ -30,8 +31,12 @@ void slot_pb_pause();
 void slot_pb_stop();
 void slot_pb_start();
 
+void slot_outResult();
+
 signals:
 void processOn();
+int getCountDetals(QChar);
+int getProcessTime(QChar, int);
 
 
 private:
@@ -44,7 +49,14 @@ private:
     QLabel* m_lb_input;
     QLabel* m_lb_countDetals;
 
+    QStringList m_outStat;
+    QLabel* outCountDetals;
+    QLabel* outPerfomance;
+
     MainActoins* m_actions;
+
+    bool pauseEnabled;
+
 };
 
 #endif // MAINWINDOW

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QEventLoop>
+#include <QVector>
 
 
 #include "generatedetals.h"
@@ -16,19 +17,22 @@ class MainActoins : public QObject
 
 public:
     explicit MainActoins(QObject *parent = 0);
-    bool isAvaliable(char detal, int count = 1);
+    bool isAvaliable(QChar detal, int count = 1);
 
     void stage(int stageNum);
 
 
 signals:
+    void updateStats();
 
 public slots:
     void Process();
+    int slot_getCountDetals(QChar detal);
+    int slot_getProcessTime(QChar type, int number);
 
 private:
     bool canConnect;
-    GenerateDetals* generator;
+    GenerateDetals* generator1;
     GenerateDetals* generator2;
     GenerateDetals* generator3;
 
@@ -40,6 +44,9 @@ private:
     ConnectDetals* stage4;
     ConnectDetals* stage5;
     ConnectDetals* stage6;
+
+
+    QVector<GenerateDetals*> m_generators;
 
 };
 
