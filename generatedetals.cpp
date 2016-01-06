@@ -3,13 +3,13 @@
 GenerateDetals::GenerateDetals(int time)
 {
 setCentralTime(time);
-setCalcTime(0);
+setCalcTime(1);
 }
 
 bool GenerateDetals::isTime()
 {
    //  qDebug() << "!TIME" << m_waitTime;
-    if(--m_waitTime <= 0) {
+    if(--m_waitTime == 0) {
         CalcTime();
         m_countDetals--;
         return true;
@@ -73,9 +73,14 @@ void GenerateDetals::setCountDetals(int count)
     m_countDetals = count;
 }
 
-bool GenerateDetals::isCanConnect()
+bool GenerateDetals::isCanGenerate()
 {
     if(m_countDetals > 0 )
         return true;
     return false;
+}
+
+void GenerateDetals::clear()
+{
+    setCalcTime(1);
 }

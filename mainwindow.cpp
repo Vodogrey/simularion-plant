@@ -6,6 +6,8 @@ MainWindow::MainWindow(QWidget* parent)
 {
     GUI();
     Buttons();
+    m_pb_stop->setDisabled(true);
+    m_pb_pause->setDisabled(true);
 
 }
 
@@ -16,6 +18,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::GUI()
 {
+    setWindowTitle("Моделирование производства продукта");
     m_layout = new QGridLayout();
     m_widget = new QWidget();
     m_pb_start = new QPushButton("Start");
@@ -26,6 +29,7 @@ void MainWindow::GUI()
     m_lb_countDetals = new QLabel();
     outCountDetals = new QLabel();
     outPerfomance = new QLabel();
+    outAllTimeProcess = new QLabel();
 
     m_actions = new MainActions();
 
@@ -35,8 +39,9 @@ void MainWindow::GUI()
     m_layout->addWidget(m_pb_start, 2, 8, 1, 1);
     m_layout->addWidget(m_pb_pause, 2, 9, 1, 1);
     m_layout->addWidget(m_pb_stop, 2, 10, 1, 1);
-    m_layout->addWidget(outCountDetals, 3, 1, 4, 5);
-    m_layout->addWidget(outPerfomance, 3, 6, 3, 3);
+    m_layout->addWidget(outCountDetals, 4, 1, 4, 6);
+    m_layout->addWidget(outPerfomance, 4, 7, 5, 6);
+    m_layout->addWidget(outAllTimeProcess, 4, 14, 3, 5);
 
     m_widget->setLayout(m_layout);
     this->setCentralWidget(m_widget);
@@ -51,14 +56,18 @@ void MainWindow::Buttons()
     connect(this, SIGNAL(getCountDetals(QChar)),m_actions, SLOT(slot_getCountDetals(QChar)));
     connect(m_actions,SIGNAL(updateStats()), this, SLOT(slot_outResult()));
     connect(this,SIGNAL(getProcessTime(QChar,int)), m_actions, SLOT(slot_getProcessTime(QChar,int)));
+    connect(this, SIGNAL(getResults()), m_actions, SLOT(slot_getResult()));
+    connect(m_actions, SIGNAL(workEnded()), this, SLOT(slot_workEnded()));
 }
 
 void MainWindow::slot_pb_start()
 {
     int count = m_le_input->text().toInt();
-    qDebug() << count;
     if(count > 0) {
+        m_actions->setStop(false);
         m_pb_start->setDisabled(true);
+        m_pb_stop->setDisabled(false);
+        m_pb_pause->setDisabled(false);
         pauseEnabled = false;
         emit processOn(count);
     }
@@ -83,7 +92,11 @@ void MainWindow::slot_pb_pause()
 
 void MainWindow::slot_pb_stop()
 {
-
+    m_actions->setStop(true);
+    m_pb_start->setDisabled(false);
+    m_pb_stop->setDisabled(true);
+    m_pb_pause->setDisabled(true);
+    m_actions->clear();
 }
 
 
@@ -105,14 +118,26 @@ void MainWindow::slot_outResult()
 
 
     outPerfomance->setText(QString("Деталь А поступит через: %1 ").arg(getProcessTime('G',0)) +
-                           QString("\nДеталь В поступит через: %1 минут").arg(getProcessTime('G',1)) +
-                           QString("\nДеталь С поступит через: %1 минут").arg(getProcessTime('G',2)) +
+                           QString("\nДеталь В поступит через: %1 ").arg(getProcessTime('G',1)) +
+                           QString("\nДеталь С поступит через: %1 ").arg(getProcessTime('G',2)) +
                            QString("\nДеталь D %1").arg(getProcessTime('C',0)) +
                            QString("\nДеталь E %1").arg(getProcessTime('C',1)) +
-                           QString("\nДеталь D и Е %1").arg(getProcessTime('C',2)) +
+                           QString("\nДетали D и Е %1").arg(getProcessTime('C',2)) +
                            QString("\nДеталь F %1").arg(getProcessTime('C',3)) +
                            QString("\nДеталь G %1").arg(getProcessTime('C',4)) +
                            QString("\nДеталь H %1").arg(getProcessTime('C',5))
                            );
 
+    outAllTimeProcess->clear();
+    outAllTimeProcess->setText(getResults());
+}
+
+
+void MainWindow::slot_workEnded()
+{
+    QMessageBox::information(0, "Внимание!", "Соединение завершено");
+    m_pb_start->setDisabled(false);
+    m_pb_stop->setDisabled(true);
+    m_pb_pause->setDisabled(true);
+    m_actions->clear();
 }

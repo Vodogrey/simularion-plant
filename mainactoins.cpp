@@ -2,6 +2,8 @@
 
 #include <qdebug.h>
 
+#define PROCESS_SPEED 500
+
 MainActions::MainActions(QObject *parent) : QObject(parent)
 {
     generator1 = new GenerateDetals(15);
@@ -45,14 +47,17 @@ void MainActions::Process(int countDetals)
         tempGen = m_generators.at(countGen);
         tempGen->setCountDetals(countDetals);
     }
+    bool crutch = true;
 
-    canConnect = true;
-    while(canConnect)
+    while((isCanWork() && !m_stop) || crutch)
     {
+        if(!isCanWork())
+            crutch = false;
+
         for(int countGen = 0; countGen < m_generators.size(); countGen++) {
             tempGen = m_generators.at(countGen);
             tempDetalType = 'A' + countGen;
-            if(tempGen->isCanConnect())
+            if(tempGen->isCanGenerate())
                 if(tempGen->isTime()) {
                     queue->add(tempGen->GetRequest(tempDetalType));
                 }
@@ -63,9 +68,13 @@ void MainActions::Process(int countDetals)
         }
 
         emit updateStats();
+        queue->addTime();
         QEventLoop loop;
-        QTimer::singleShot(1000,&loop,SLOT(quit()));
+        QTimer::singleShot(PROCESS_SPEED,&loop,SLOT(quit()));
         loop.exec();
+    }
+    if(!isCanWork()) {
+        emit workEnded();
     }
 }
 
@@ -164,6 +173,8 @@ void MainActions::stage(int stageNum)
     case 6:
         if(stage6->isEnded()) {
             queue->add(stage6->GetRequest('H'));
+            m_resultsInSystem << queue->at(queue->getSize()-1)->systemTime;
+            m_resultsInConnections <<queue->at(queue->getSize()-1)->procTime;
             qDebug() << "6 is ended";
             stage6->setEnd(false);
             stage6->setFree(true);
@@ -172,7 +183,6 @@ void MainActions::stage(int stageNum)
             if(isAvaliable('G') && isAvaliable('B') && isAvaliable('C',2)) {
                 stage6->setFree(false);
                 stage6->connecting("GBCC");
-                qDebug() << "STOP!!!";
             }
         }
         break;
@@ -198,8 +208,8 @@ int MainActions::slot_getCountDetals(QChar detal)
 QString MainActions::slot_getProcessTime(QChar type, int number)
 {
     QString time;
-    if(type == 'G')
-        if(m_generators[number]->getProcessTime() == 0) {
+    if(type == 'G') {
+        if(!m_generators[number]->isCanGenerate()) {
             time = "Нет поступлений";
             return time;
         }
@@ -208,8 +218,9 @@ QString MainActions::slot_getProcessTime(QChar type, int number)
             time = QString("%1 минут").arg(m_generators[number]->getProcessTime());
             return time;
         }
+    }
 
-    if(type == 'C')
+    if(type == 'C') {
         if(m_connections[number]->getConnectTime() == 0) {
             time = "Не изготавляется";
             return time;
@@ -218,6 +229,7 @@ QString MainActions::slot_getProcessTime(QChar type, int number)
             time = QString("будет готова через: %1 минут").arg(m_connections[number]->getConnectTime());
             return time;
         }
+    }
 
     return "-1";
 }
@@ -227,4 +239,59 @@ QString MainActions::slot_getProcessTime(QChar type, int number)
 // ++++ выводить, сколько до генерации, сколько осталось деталей ++++
 // ++++ сделать ограничение на детали ++++
 // +-остановить работу, если соединения больше невозможны
-// плюсовать время на детали
+// ++++ плюсовать время на детали ++++
+// ++++ дописать, сколько всего делалась ++++
+
+
+QString MainActions::slot_getResult()
+{
+    if(!m_resultsInConnections.isEmpty()) {
+    QString time;
+    int averageInSystem = 0;
+    int averageInProc = 0;
+    for(int i = 0; i < m_resultsInSystem.size(); i++) {
+        averageInSystem += m_resultsInSystem.at(i);
+        averageInProc += m_resultsInConnections.at(i);
+    }
+    averageInSystem /= m_resultsInConnections.size();
+    averageInProc /= m_resultsInConnections.size();
+
+    time = QString("Деталь изготовлялась %1").arg(m_resultsInSystem[m_resultsInSystem.size()-1]) +
+           QString("\nИз них обрабатывалась %1").arg(m_resultsInConnections[m_resultsInConnections.size()-1]) +
+            QString("\nВ среднем эти значения равны %1 и %2 соответственно").arg(averageInSystem).arg(averageInProc);
+    return time;
+    }
+    return "";
+}
+
+bool MainActions::isCanWork()
+{
+
+    for(int i = 0;i < m_generators.size();i++)
+    {
+        if(m_generators.at(i)->isCanGenerate())
+            return true;
+    }
+
+    for(int i = 0; i < m_connections.size(); i++) {
+        if(m_connections[i]->getConnectTime() != 0)
+            return true;
+    }
+    return false;
+}
+
+void MainActions::clear()
+{
+    m_resultsInConnections.clear();
+    m_resultsInSystem.clear();
+    queue->clear();
+    for(int i = 0; i<m_generators.size(); i++)
+        m_generators.at(i)->clear();
+    for(int i = 0;i < m_connections.size();i++)
+        m_connections.at(i)->clear();
+}
+
+void MainActions::setStop(bool stop)
+{
+    m_stop = stop;
+}

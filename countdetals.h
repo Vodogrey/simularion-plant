@@ -14,6 +14,8 @@ public:
     int getSize();
     Request* at(int pos);
     Request* getRequest(QChar detal);
+    void addTime();
+    void clear();
 
 signals:
 

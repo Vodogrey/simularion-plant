@@ -36,7 +36,8 @@ public:
     void setCalcTime(int time);
     int getProcessTime();
     void setCountDetals(int count);
-    bool isCanConnect();
+    bool isCanGenerate();
+    void clear();
 private:
     int m_waitTime;
     int m_centralTime;

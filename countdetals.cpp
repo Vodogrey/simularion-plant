@@ -11,7 +11,7 @@ CountDetals::CountDetals(QObject *parent) : QObject(parent)
 void CountDetals::add(Request* req)
 {
     queue.append(req);
- //   qDebug() << "!!!add!!!";
+    //   qDebug() << "!!!add!!!";
 }
 
 Request* CountDetals::at(int pos)
@@ -26,10 +26,24 @@ int CountDetals::getSize()
 
 Request* CountDetals::getRequest(QChar detal)
 {
-        for(int i = 0; i<queue.size(); i++) {
-            if(queue.at(i)->type == detal) {
-                qDebug() << "detal type" << queue.at(i)->type << "address " << queue.at(i);
-                return queue.takeAt(i);
-            }
+    for(int i = 0; i<queue.size(); i++) {
+        if(queue.at(i)->type == detal) {
+            qDebug() << "detal type" << queue.at(i)->type << "address " << queue.at(i);
+            return queue.takeAt(i);
         }
+    }
+    return queue.at(0);
+}
+
+void CountDetals::addTime()
+{
+    for(int i = 0; i<queue.size(); i++) {
+        if(queue.at(i)->type != 'H')
+            queue.at(i)->systemTime++;
+    }
+}
+
+void CountDetals::clear()
+{
+    queue.clear();
 }

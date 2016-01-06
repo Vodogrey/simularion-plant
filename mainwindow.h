@@ -10,6 +10,7 @@
 #include <qlineedit.h>
 #include <qdebug.h>
 #include <qstringlist.h>
+#include <qmessagebox.h>
 
 
 #include "mainactoins.h"
@@ -30,13 +31,14 @@ protected slots:
 void slot_pb_pause();
 void slot_pb_stop();
 void slot_pb_start();
-
 void slot_outResult();
+void slot_workEnded();
 
 signals:
 void processOn(int);
 int getCountDetals(QChar);
 QString getProcessTime(QChar, int);
+QString getResults();
 
 
 private:
@@ -52,6 +54,7 @@ private:
     QStringList m_outStat;
     QLabel* outCountDetals;
     QLabel* outPerfomance;
+    QLabel* outAllTimeProcess;
 
     MainActions* m_actions;
 

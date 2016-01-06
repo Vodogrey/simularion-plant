@@ -21,18 +21,22 @@ public:
     bool isAvaliable(QChar detal, int count = 1);
 
     void stage(int stageNum);
+    bool isCanWork();
+    void setStop(bool stop);
 
 
 signals:
     void updateStats();
+    void workEnded();
 
 public slots:
     void Process(int countDetals);
     int slot_getCountDetals(QChar detal);
     QString slot_getProcessTime(QChar type, int number);
+    QString slot_getResult();
+    void clear();
 
 private:
-    bool canConnect;
     GenerateDetals* generator1;
     GenerateDetals* generator2;
     GenerateDetals* generator3;
@@ -49,6 +53,10 @@ private:
 
     QVector<GenerateDetals*> m_generators;
     QVector<ConnectDetals*> m_connections;
+    QVector<int> m_resultsInSystem;
+    QVector<int> m_resultsInConnections;
+
+    bool m_stop;
 
 };
 
