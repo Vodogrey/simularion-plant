@@ -35,6 +35,7 @@ public slots:
     QString slot_getProcessTime(QChar type, int number);
     QString slot_getResult();
     void clear();
+    void setSpeed(int speed);
 
 private:
     GenerateDetals* generator1;
@@ -56,7 +57,11 @@ private:
     QVector<int> m_resultsInSystem;
     QVector<int> m_resultsInConnections;
 
+    QEventLoop loop;
+
     bool m_stop;
+
+    int m_processSpeed;
 
 };
 

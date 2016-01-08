@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget* parent)
 {
     GUI();
     Buttons();
+    addMenu();
     m_pb_stop->setDisabled(true);
     m_pb_pause->setDisabled(true);
 
@@ -58,6 +59,15 @@ void MainWindow::Buttons()
     connect(this,SIGNAL(getProcessTime(QChar,int)), m_actions, SLOT(slot_getProcessTime(QChar,int)));
     connect(this, SIGNAL(getResults()), m_actions, SLOT(slot_getResult()));
     connect(m_actions, SIGNAL(workEnded()), this, SLOT(slot_workEnded()));
+    connect(this, SIGNAL(setSpeed(int)), m_actions, SLOT(setSpeed(int)));
+}
+
+void MainWindow::addMenu()
+{
+    QMenu* menu = new QMenu("Меню");
+    menuBar()->addMenu(menu);
+    menu->addAction("Установить скорость", this, SLOT(slot_dialogSetSpeed()));
+    menu->addAction("Выход", this, SLOT(close()));
 }
 
 void MainWindow::slot_pb_start()
@@ -140,4 +150,14 @@ void MainWindow::slot_workEnded()
     m_pb_stop->setDisabled(true);
     m_pb_pause->setDisabled(true);
     m_actions->clear();
+}
+
+void MainWindow::slot_dialogSetSpeed()
+{
+    bool ok;
+    int speed = QInputDialog::getInt(this, QString::fromUtf8("Введите скорость вычисления"),
+                                           QString::fromUtf8("Скорость:"), 500, 0, 1000, 100, &ok);
+    if (ok){
+        emit setSpeed(speed);
+    }
 }

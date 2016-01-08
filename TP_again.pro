@@ -1,7 +1,7 @@
 QT += core gui widgets
 
 TARGET = TP_again
-CONFIG += console
+CONFIG -= console
 CONFIG -= app_bundle
 
 TEMPLATE = app

@@ -8,9 +8,10 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
-#include <qdebug.h>
 #include <qstringlist.h>
 #include <qmessagebox.h>
+#include <QMenuBar>
+#include <QInputDialog>
 
 
 #include "mainactoins.h"
@@ -26,6 +27,7 @@ public:
 protected:
     void GUI();
     void Buttons();
+    void addMenu();
 
 protected slots:
 void slot_pb_pause();
@@ -33,12 +35,14 @@ void slot_pb_stop();
 void slot_pb_start();
 void slot_outResult();
 void slot_workEnded();
+void slot_dialogSetSpeed();
 
 signals:
 void processOn(int);
 int getCountDetals(QChar);
 QString getProcessTime(QChar, int);
 QString getResults();
+void setSpeed(int);
 
 
 private:

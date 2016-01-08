@@ -2,7 +2,6 @@
 
 #include <qdebug.h>
 
-#define PROCESS_SPEED 500
 
 MainActions::MainActions(QObject *parent) : QObject(parent)
 {
@@ -29,6 +28,8 @@ MainActions::MainActions(QObject *parent) : QObject(parent)
     m_connections << stage4;
     m_connections << stage5;
     m_connections << stage6;
+
+    m_processSpeed = 500;
 }
 
 MainActions::~MainActions()
@@ -69,8 +70,7 @@ void MainActions::Process(int countDetals)
 
         emit updateStats();
         queue->addTime();
-        QEventLoop loop;
-        QTimer::singleShot(PROCESS_SPEED,&loop,SLOT(quit()));
+        QTimer::singleShot(m_processSpeed,&loop,SLOT(quit()));
         loop.exec();
     }
     if(!isCanWork()) {
@@ -234,15 +234,6 @@ QString MainActions::slot_getProcessTime(QChar type, int number)
     return "-1";
 }
 
-// ++++ переписать, чтобы деталь добавлялась после обработки ++++
-// ++++ выводить, что "готовится" на каждом из этапов, сколько осталось ++++
-// ++++ выводить, сколько до генерации, сколько осталось деталей ++++
-// ++++ сделать ограничение на детали ++++
-// +-остановить работу, если соединения больше невозможны
-// ++++ плюсовать время на детали ++++
-// ++++ дописать, сколько всего делалась ++++
-
-
 QString MainActions::slot_getResult()
 {
     if(!m_resultsInConnections.isEmpty()) {
@@ -294,4 +285,10 @@ void MainActions::clear()
 void MainActions::setStop(bool stop)
 {
     m_stop = stop;
+}
+
+void MainActions::setSpeed(int speed)
+{
+ loop.quit();
+ m_processSpeed = speed;
 }
