@@ -1,7 +1,5 @@
 #include "mainactoins.h"
 
-#include <qdebug.h>
-
 
 MainActions::MainActions(QObject *parent) : QObject(parent)
 {
@@ -175,7 +173,6 @@ void MainActions::stage(int stageNum)
             queue->add(stage6->GetRequest('H'));
             m_resultsInSystem << queue->at(queue->getSize()-1)->systemTime;
             m_resultsInConnections <<queue->at(queue->getSize()-1)->procTime;
-            qDebug() << "6 is ended";
             stage6->setEnd(false);
             stage6->setFree(true);
         }

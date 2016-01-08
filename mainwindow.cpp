@@ -97,7 +97,6 @@ void MainWindow::slot_pb_pause()
             loop.exec();
         }
     }
-    qDebug() << "pause is " << pauseEnabled;
 }
 
 void MainWindow::slot_pb_stop()

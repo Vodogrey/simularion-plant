@@ -4,7 +4,6 @@
 #include <QObject>
 #include <qvector.h>
 
-#include <qdebug.h>
 
 
 class Request {

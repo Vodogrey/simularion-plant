@@ -1,8 +1,6 @@
 #include "countdetals.h"
 #include <generatedetals.h>
 
-#include <QDebug>
-
 CountDetals::CountDetals(QObject *parent) : QObject(parent)
 {
 
@@ -28,7 +26,6 @@ Request* CountDetals::getRequest(QChar detal)
 {
     for(int i = 0; i<queue.size(); i++) {
         if(queue.at(i)->type == detal) {
-            qDebug() << "detal type" << queue.at(i)->type << "address " << queue.at(i);
             return queue.takeAt(i);
         }
     }
